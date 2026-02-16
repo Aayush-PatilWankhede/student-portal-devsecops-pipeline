@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  student-portal:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: student-portal-app
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=development
+      - SECRET_KEY=${SECRET_KEY:-dev-secret-key-change-in-production}
+      - DATABASE_URL=sqlite:///database/students.db
+      - UPLOAD_FOLDER=static/uploads
+      - MAX_CONTENT_LENGTH=16777216
+    volumes:
+      # Persist database
+      - ./database:/app/database
+      # Persist uploads
+      - ./static/uploads:/app/static/uploads
+      # Persist logs
+      - ./logs:/app/logs
+      # Mount .env file if it exists
+      - ./.env:/app/.env:ro
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/health')" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks:
+      - student-portal-network
+
+networks:
+  student-portal-network:
+    driver: bridge

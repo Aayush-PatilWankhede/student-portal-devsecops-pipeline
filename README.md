@@ -60,9 +60,12 @@ student-portal/
 ├── requirements.txt            # Python dependencies
 ├── .env.example               # Environment variable template
 ├── .gitignore                 # Git ignore rules
+├── .dockerignore              # Docker ignore rules
+├── Dockerfile                 # Docker image configuration
+├── docker-compose.yml         # Docker Compose configuration
 ├── README.md                  # This file
 │
-├── templates/                 # HTML templates (24 files)
+├── templates/                 # HTML templates (22 files)
 │   ├── base.html             # Base template with navigation
 │   ├── login.html            # Login page
 │   ├── signup.html           # Registration page
@@ -285,17 +288,57 @@ This application is designed to integrate with DevSecOps pipelines and tools:
 - Comprehensive logging for Prometheus/Grafana integration
 - Structured log format for log aggregation
 
-### Docker Example
+## 🐳 Docker Deployment
 
-```dockerfile
-FROM python:3.11-slim
-WORKDIR /app
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-COPY . .
-EXPOSE 5000
-CMD ["python", "app.py"]
+The application includes production-ready Docker configuration with security best practices.
+
+### Quick Start with Docker Compose
+
+```bash
+# Build and run with docker-compose (recommended)
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop the application
+docker-compose down
 ```
+
+The application will be available at `http://localhost:5000`
+
+### Manual Docker Build
+
+```bash
+# Build the Docker image
+docker build -t student-portal:latest .
+
+# Run the container
+docker run -d \
+  -p 5000:5000 \
+  -v $(pwd)/database:/app/database \
+  -v $(pwd)/static/uploads:/app/static/uploads \
+  -v $(pwd)/logs:/app/logs \
+  -e SECRET_KEY=your-secret-key \
+  --name student-portal-app \
+  student-portal:latest
+
+# View logs
+docker logs -f student-portal-app
+
+# Stop and remove
+docker stop student-portal-app
+docker rm student-portal-app
+```
+
+### Docker Features
+
+- **Multi-stage build**: Optimized image size
+- **Non-root user**: Enhanced security
+- **Health checks**: Built-in container health monitoring
+- **Volume mounts**: Persistent data for database, uploads, and logs
+- **Environment variables**: Flexible configuration
+
 
 ## 📝 Logging
 
