@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}Grade Assignment - Admin{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0">
+                    <i class="bi bi-pencil-square"></i> Grade Assignment
+                </h4>
+            </div>
+            <div class="card-body p-4">
+                <!-- Assignment Details -->
+                <div class="alert alert-info">
+                    <h6 class="mb-2"><strong>Assignment Details:</strong></h6>
+                    <p class="mb-1"><strong>Student:</strong> {{ assignment.user.name }} ({{ assignment.user.email }})
+                    </p>
+                    <p class="mb-1"><strong>Department:</strong> {{ assignment.user.department }} - Year {{
+                        assignment.user.year }}</p>
+                    <p class="mb-1"><strong>Filename:</strong> {{ assignment.filename.split('_', 2)[-1] if '_' in
+                        assignment.filename else assignment.filename }}</p>
+                    <p class="mb-0"><strong>Uploaded:</strong> {{ assignment.upload_date.strftime('%B %d, %Y at %I:%M
+                        %p') }}</p>
+                </div>
+
+                <!-- Download Assignment -->
+                <div class="mb-4">
+                    <a href="{{ url_for('download', filename=assignment.filename) }}" class="btn btn-primary">
+                        <i class="bi bi-download"></i> Download Assignment
+                    </a>
+                </div>
+
+                <!-- Grading Form -->
+                <form method="POST" action="{{ url_for('admin_grade', assignment_id=assignment.id) }}">
+                    <div class="mb-3">
+                        <label for="grade" class="form-label">Grade <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="grade" name="grade"
+                            value="{{ assignment.grade if assignment.grade }}" placeholder="e.g., A, B+, 95%, etc."
+                            required>
+                        <div class="form-text">
+                            Enter letter grade (A, B+, etc.) or percentage (95%, 88%, etc.)
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="comments" class="form-label">Comments/Feedback</label>
+                        <textarea class="form-control" id="comments" name="comments" rows="5"
+                            placeholder="Add comments or feedback for the student...">{{ assignment.comments if assignment.comments }}</textarea>
+                        <div class="form-text">
+                            Optional: Provide detailed feedback to help the student improve
+                        </div>
+                    </div>
+
+                    {% if assignment.grade %}
+                    <div class="alert alert-warning">
+                        <i class="bi bi-info-circle"></i>
+                        <strong>Note:</strong> This assignment was previously graded with "{{ assignment.grade }}"
+                        on {{ assignment.graded_at.strftime('%B %d, %Y') }}. Submitting will update the grade.
+                    </div>
+                    {% endif %}
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-between">
+                        <a href="{{ url_for('admin_assignments') }}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left"></i> Back to Assignments
+                        </a>
+                        <button type="submit" class="btn btn-success btn-lg">
+                            <i class="bi bi-check-circle"></i> Submit Grade
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

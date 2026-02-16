@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}Send Notifications - Admin{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-info text-white">
+                <h4 class="mb-0">
+                    <i class="bi bi-bell"></i> Send Notification
+                </h4>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST" action="{{ url_for('admin_notifications') }}">
+                    <div class="mb-3">
+                        <label class="form-label">Send To <span class="text-danger">*</span></label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="recipient_type" id="all_students"
+                                value="all" checked
+                                onchange="document.getElementById('student_select').disabled = true">
+                            <label class="form-check-label" for="all_students">
+                                <strong>All Students</strong> ({{ students|length }} students)
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="recipient_type" id="specific_student"
+                                value="specific" onchange="document.getElementById('student_select').disabled = false">
+                            <label class="form-check-label" for="specific_student">
+                                <strong>Specific Student</strong>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="student_select" class="form-label">Select Student</label>
+                        <select class="form-select" id="student_select" name="student_id" disabled>
+                            <option value="">Choose a student...</option>
+                            {% for student in students %}
+                            <option value="{{ student.id }}">
+                                {{ student.name }} - {{ student.department }} (Year {{ student.year }})
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="message" class="form-label">Message <span class="text-danger">*</span></label>
+                        <textarea class="form-control" id="message" name="message" rows="5" required
+                            placeholder="Enter notification message..."></textarea>
+                        <div class="form-text">
+                            Students will see this notification in their notification center
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i>
+                        <strong>Tip:</strong> Use notifications to inform students about important updates,
+                        deadlines, or graded assignments.
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left"></i> Cancel
+                        </a>
+                        <button type="submit" class="btn btn-info text-white btn-lg">
+                            <i class="bi bi-send"></i> Send Notification
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

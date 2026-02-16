@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Announcements - Student Portal{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12 d-flex justify-content-between align-items-center">
+        <h2><i class="bi bi-megaphone"></i> Announcements</h2>
+    </div>
+</div>
+
+<!-- Search Form -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <form method="GET" action="{{ url_for('announcements') }}">
+            <div class="input-group">
+                <input type="text" class="form-control" name="search" placeholder="Search announcements..."
+                    value="{{ search_query if search_query }}">
+                <button class="btn btn-primary" type="submit">
+                    <i class="bi bi-search"></i> Search
+                </button>
+                {% if search_query %}
+                <a href="{{ url_for('announcements') }}" class="btn btn-outline-secondary">
+                    Clear
+                </a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+</div>
+
+{% if announcements %}
+<div class="row">
+    {% for announcement in announcements %}
+    <div class="col-12 mb-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <h5 class="card-title">
+                        {{ announcement.title }}
+                        {% set days_old = (now() - announcement.created_at).days %}
+                        {% if days_old < 7 %} <span class="badge bg-success ms-2">New</span>
+                            {% endif %}
+                    </h5>
+                    <small class="text-muted">
+                        <i class="bi bi-calendar"></i> {{ announcement.created_at.strftime('%B %d, %Y') }}
+                    </small>
+                </div>
+                <p class="card-text">{{ announcement.message }}</p>
+                {% if announcement.updated_at %}
+                <small class="text-muted">
+                    <i class="bi bi-pencil"></i> Updated: {{ announcement.updated_at.strftime('%b %d, %Y') }}
+                </small>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="card shadow-sm">
+    <div class="card-body text-center py-5">
+        <i class="bi bi-megaphone" style="font-size: 4rem; color: #ccc;"></i>
+        <h4 class="mt-3 text-muted">
+            {% if search_query %}
+            No announcements found matching "{{ search_query }}"
+            {% else %}
+            No announcements available
+            {% endif %}
+        </h4>
+        {% if search_query %}
+        <a href="{{ url_for('announcements') }}" class="btn btn-outline-primary mt-2">
+            View All Announcements
+        </a>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+{% endblock %}

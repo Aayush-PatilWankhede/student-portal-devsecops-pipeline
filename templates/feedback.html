@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}Feedback - Student Portal{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">
+                    <i class="bi bi-chat-left-text"></i> Submit Feedback
+                </h4>
+            </div>
+            <div class="card-body p-4">
+                <p class="text-muted">
+                    We value your feedback! Please share your thoughts, suggestions, or concerns about the portal.
+                </p>
+
+                <form method="POST" action="{{ url_for('feedback') }}">
+                    <div class="mb-3">
+                        <label for="subject" class="form-label">Subject <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="subject" name="subject" required
+                            placeholder="Brief description of your feedback">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="message" class="form-label">Message <span class="text-danger">*</span></label>
+                        <textarea class="form-control" id="message" name="message" rows="6" required
+                            placeholder="Please provide detailed feedback..."></textarea>
+                        <div class="form-text">
+                            <span id="charCount">0</span>/1000 characters
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">Rating <span class="text-danger">*</span></label>
+                        <div class="rating-group">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="rating" id="rating1" value="1"
+                                    required>
+                                <label class="form-check-label" for="rating1">
+                                    1 ⭐ Poor
+                                </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="rating" id="rating2" value="2">
+                                <label class="form-check-label" for="rating2">
+                                    2 ⭐⭐ Fair
+                                </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="rating" id="rating3" value="3">
+                                <label class="form-check-label" for="rating3">
+                                    3 ⭐⭐⭐ Good
+                                </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="rating" id="rating4" value="4">
+                                <label class="form-check-label" for="rating4">
+                                    4 ⭐⭐⭐⭐ Very Good
+                                </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="rating" id="rating5" value="5">
+                                <label class="form-check-label" for="rating5">
+                                    5 ⭐⭐⭐⭐⭐ Excellent
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-between">
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left"></i> Back
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-send"></i> Submit Feedback
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Character counter
+    document.getElementById('message').addEventListener('input', function () {
+        const count = this.value.length;
+        document.getElementById('charCount').textContent = count;
+        if (count > 1000) {
+            this.value = this.value.substring(0, 1000);
+            document.getElementById('charCount').textContent = 1000;
+        }
+    });
+</script>
+{% endblock %}

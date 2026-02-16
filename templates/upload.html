@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Assignment - Student Portal{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">
+                    <i class="bi bi-upload"></i> Upload Assignment
+                </h4>
+            </div>
+            <div class="card-body p-4">
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i>
+                    <strong>Upload Guidelines:</strong>
+                    <ul class="mb-0 mt-2">
+                        <li>Allowed file types: PDF, DOC, DOCX</li>
+                        <li>Maximum file size: 16 MB</li>
+                        <li>File will be securely stored and available for download</li>
+                    </ul>
+                </div>
+
+                <form method="POST" action="{{ url_for('upload') }}" enctype="multipart/form-data">
+                    <div class="mb-4">
+                        <label for="file" class="form-label">Select File</label>
+                        <input class="form-control form-control-lg" type="file" id="file" name="file"
+                            accept=".pdf,.doc,.docx" required>
+                        <div class="form-text">
+                            Choose a PDF, DOC, or DOCX file to upload
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-between">
+                        <a href="{{ url_for('assignments') }}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left"></i> Back to Assignments
+                        </a>
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-upload"></i> Upload Assignment
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card shadow-sm mt-4">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">
+                    <i class="bi bi-question-circle"></i> Need Help?
+                </h5>
+            </div>
+            <div class="card-body">
+                <p><strong>File Format Tips:</strong></p>
+                <ul>
+                    <li><strong>PDF:</strong> Best for assignments with images and formatting</li>
+                    <li><strong>DOC/DOCX:</strong> Good for text-based assignments</li>
+                </ul>
+                <p class="mb-0">
+                    <strong>Having trouble?</strong> Contact your instructor or use the
+                    <a href="{{ url_for('feedback') }}">feedback form</a> for technical support.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
