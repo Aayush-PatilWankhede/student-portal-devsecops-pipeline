@@ -12,14 +12,12 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                echo 'Checking out code from repository...'
                 git branch: 'main', url: "${GIT_REPO}"
             }
         }
         
         stage('Build Docker Image') {
             steps {
-                echo 'Building Docker image...'
                 script {
                     docker.build("${DOCKER_IMAGE}:${DOCKER_TAG}")
                     docker.build("${DOCKER_IMAGE}:latest")
@@ -29,7 +27,6 @@ pipeline {
         
         stage('Run Tests') {
             steps {
-                echo 'Running application tests...'
                 script {
                     sh '''
                         docker run --rm ${DOCKER_IMAGE}:${DOCKER_TAG} python -m pytest tests/ || echo "No tests found"
@@ -42,7 +39,6 @@ pipeline {
             parallel {
                 stage('Trivy Vulnerability Scan') {
                     steps {
-                        echo 'Running Trivy security scan...'
                         script {
                             sh '''
                                 docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
@@ -55,7 +51,6 @@ pipeline {
                 
                 stage('Python Bandit Scan') {
                     steps {
-                        echo 'Running Bandit Python security scan...'
                         script {
                             sh '''
                                 docker run --rm -v ${WORKSPACE}:/code \
@@ -69,7 +64,6 @@ pipeline {
         
         stage('Code Quality Analysis') {
             steps {
-                echo 'Running code quality checks...'
                 script {
                     sh '''
                         docker run --rm -v ${WORKSPACE}:/code \
@@ -84,7 +78,6 @@ pipeline {
                 branch 'main'
             }
             steps {
-                echo 'Pushing Docker image to registry...'
                 script {
                     docker.withRegistry("https://${DOCKER_REGISTRY}", "${DOCKER_CREDENTIALS_ID}") {
                         docker.image("${DOCKER_IMAGE}:${DOCKER_TAG}").push()
@@ -99,7 +92,6 @@ pipeline {
                 branch 'main'
             }
             steps {
-                echo 'Deploying to staging environment...'
                 script {
                     sh '''
                         docker stop student-portal-staging || true
@@ -118,7 +110,6 @@ pipeline {
         
         stage('Health Check') {
             steps {
-                echo 'Running health check...'
                 script {
                     sh '''
                         sleep 10
@@ -142,7 +133,6 @@ pipeline {
                 branch 'main'
             }
             steps {
-                echo 'Deploying to production environment...'
                 script {
                     sh '''
                         docker stop student-portal-prod || true
@@ -162,7 +152,6 @@ pipeline {
     
     post {
         success {
-            echo 'Pipeline completed successfully!'
             emailext(
                 subject: "SUCCESS: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
                 body: "Good news! The build ${env.BUILD_NUMBER} completed successfully.",
@@ -170,7 +159,6 @@ pipeline {
             )
         }
         failure {
-            echo 'Pipeline failed!'
             emailext(
                 subject: "FAILURE: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
                 body: "Build ${env.BUILD_NUMBER} failed. Please check Jenkins for details.",
@@ -178,7 +166,6 @@ pipeline {
             )
         }
         always {
-            echo 'Cleaning up...'
             sh 'docker system prune -f || true'
             cleanWs()
         }

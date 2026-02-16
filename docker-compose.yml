@@ -15,13 +15,9 @@ services:
       - UPLOAD_FOLDER=static/uploads
       - MAX_CONTENT_LENGTH=16777216
     volumes:
-      # Persist database
       - ./database:/app/database
-      # Persist uploads
       - ./static/uploads:/app/static/uploads
-      # Persist logs
       - ./logs:/app/logs
-      # Mount .env file if it exists
       - ./.env:/app/.env:ro
     restart: unless-stopped
     healthcheck:
