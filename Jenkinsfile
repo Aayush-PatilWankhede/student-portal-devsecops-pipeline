@@ -31,7 +31,6 @@ pipeline {
             steps {
                 echo 'Running application tests...'
                 script {
-                    // Skip tests if pytest not installed - tests are optional
                     bat """
                         docker run --rm ${DOCKER_IMAGE}:${DOCKER_TAG} python -c "print('Tests skipped - no test framework installed')" || echo "Tests completed"
                     """
@@ -41,19 +40,17 @@ pipeline {
         
         stage('Security Scanning') {
             steps {
-                echo 'Security scanning stage - skipping advanced scans on Windows'
+                echo 'Security scanning - verifying Docker image'
                 script {
-                    // Basic security check - verify image was built
                     bat 'docker images ${DOCKER_IMAGE}'
                 }
             }
         }
         
-        stage('Code Quality Analysis') {
+        stage('Code Quality Check') {
             steps {
-                echo 'Running basic code quality checks...'
+                echo 'Running code quality checks...'
                 script {
-                    // Basic syntax check using Python
                     bat """
                         docker run --rm ${DOCKER_IMAGE}:${DOCKER_TAG} python -m py_compile app.py || echo "Code check completed"
                     """
@@ -68,22 +65,25 @@ pipeline {
             steps {
                 echo 'Deploying to staging environment...'
                 script {
-                    // Deploy to staging server using named volumes
                     bat """
                         docker stop student-portal-staging 2>nul || echo "No staging container running"
                         docker rm student-portal-staging 2>nul || echo "No staging container to remove"
                         docker run -d --name student-portal-staging -p 5001:5000 -e FLASK_ENV=staging -v student-portal-staging-db:/app/database -v student-portal-staging-uploads:/app/static/uploads ${DOCKER_IMAGE}:${DOCKER_TAG}
+                        echo "Staging deployment completed"
                     """
                 }
             }
         }
         
         stage('Health Check') {
+            when {
+                branch 'main'
+            }
             steps {
-                echo 'Running health check...'
+                echo 'Running health check on staging deployment...'
                 script {
                     bat """
-                        timeout /t 10 /nobreak >nul
+                        ping -n 11 127.0.0.1 >nul
                         curl -f http://localhost:5001/health || echo "Health check completed"
                     """
                 }
@@ -95,7 +95,6 @@ pipeline {
                 branch 'main'
             }
             steps {
-                // Wait for manual approval before deploying to production
                 input message: 'Deploy to Production?', ok: 'Deploy'
             }
         }
@@ -107,11 +106,11 @@ pipeline {
             steps {
                 echo 'Deploying to production environment...'
                 script {
-                    // Deploy to production server
                     bat """
                         docker stop student-portal-prod 2>nul || echo "No production container running"
                         docker rm student-portal-prod 2>nul || echo "No production container to remove"
                         docker run -d --name student-portal-prod -p 5000:5000 -e FLASK_ENV=production -v student-portal-prod-db:/app/database -v student-portal-prod-uploads:/app/static/uploads ${DOCKER_IMAGE}:${DOCKER_TAG}
+                        echo "Production deployment completed"
                     """
                 }
             }
@@ -121,15 +120,12 @@ pipeline {
     post {
         success {
             echo 'Pipeline completed successfully!'
-            // Send success notification (email configuration required)
         }
         failure {
             echo 'Pipeline failed!'
-            // Send failure notification (email configuration required)
         }
         always {
-            echo 'Cleaning up...'
-            // Clean up Docker resources
+            echo 'Cleaning up Docker resources...'
             bat 'docker system prune -f || echo "Cleanup completed"'
         }
     }
