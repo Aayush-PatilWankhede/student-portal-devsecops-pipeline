@@ -38,11 +38,11 @@ pipeline {
         
         stage('Security Scanning with Trivy') {
             steps {
-                echo 'Running Trivy vulnerability scan...'
+                echo 'Running Trivy vulnerability scan using Docker...'
                 script {
                     bat """
-                        trivy image --severity HIGH,CRITICAL --exit-code 0 --format table ${DOCKER_IMAGE}:${DOCKER_TAG}
-                        trivy image --severity HIGH,CRITICAL --format json --output trivy-report.json ${DOCKER_IMAGE}:${DOCKER_TAG}
+                        docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest image --severity HIGH,CRITICAL --exit-code 0 --format table ${DOCKER_IMAGE}:${DOCKER_TAG}
+                        docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v %WORKSPACE%:/output aquasec/trivy:latest image --severity HIGH,CRITICAL --format json --output /output/trivy-report.json ${DOCKER_IMAGE}:${DOCKER_TAG}
                     """
                     echo 'Trivy scan completed. Check trivy-report.json for details.'
                 }

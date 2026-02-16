@@ -9,6 +9,9 @@ database/
 __pycache__/
 *.py[cod]
 *$py.class
+
+# Trivy security reports
+trivy-report.json
 *.so
 .Python
 *.egg-info/
