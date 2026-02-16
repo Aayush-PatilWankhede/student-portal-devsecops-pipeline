@@ -11,10 +11,14 @@ from flask import Flask, render_template, request, redirect, url_for, flash, ses
 from flask_sqlalchemy import SQLAlchemy
 import bcrypt
 from config import Config, allowed_file
+from prometheus_flask_exporter import PrometheusMetrics
 
 # Initialize Flask app
 app = Flask(__name__)
 app.config.from_object(Config)
+
+# Initialize Prometheus metrics
+metrics = PrometheusMetrics(app)
 
 # Initialize database
 db = SQLAlchemy(app)

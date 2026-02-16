@@ -12,6 +12,11 @@ __pycache__/
 
 # Trivy security reports
 trivy-report.json
+
+# Monitoring data
+grafana/
+prometheus-data/
+
 *.so
 .Python
 *.egg-info/
