@@ -63,6 +63,7 @@ student-portal/
 ├── .dockerignore              # Docker ignore rules
 ├── Dockerfile                 # Docker image configuration
 ├── docker-compose.yml         # Docker Compose configuration
+├── Jenkinsfile                # Jenkins CI/CD pipeline
 ├── README.md                  # This file
 │
 ├── templates/                 # HTML templates (22 files)
@@ -282,6 +283,60 @@ This application is designed to integrate with DevSecOps pipelines and tools:
 - Structured for GitHub Actions/Jenkins pipelines
 - Automated testing hooks
 - Docker containerization ready
+
+## 🔄 Jenkins CI/CD Pipeline
+
+The project includes a comprehensive Jenkins pipeline (`Jenkinsfile`) with DevSecOps best practices.
+
+### Pipeline Stages
+
+1. **Checkout** - Clone code from GitHub
+2. **Build Docker Image** - Build containerized application
+3. **Run Tests** - Execute automated tests
+4. **Security Scanning** - Parallel vulnerability scans:
+   - Trivy: Container image scanning
+   - Bandit: Python code security analysis
+5. **Code Quality Analysis** - Flake8 linting
+6. **Push to Registry** - Push images to Docker registry
+7. **Deploy to Staging** - Automated staging deployment
+8. **Health Check** - Verify application health
+9. **Manual Approval** - Production deployment gate
+10. **Deploy to Production** - Production deployment
+11. **Post Actions** - Notifications and cleanup
+
+### Jenkins Setup
+
+**Prerequisites:**
+- Jenkins server with Docker installed
+- Docker Pipeline plugin
+- Email Extension Plugin (for notifications)
+
+**Configure Jenkins:**
+
+1. Create a new Pipeline job in Jenkins
+2. Point to your Git repository
+3. Set up credentials:
+   ```
+   - Docker Hub credentials (ID: docker-hub-credentials)
+   - Email notification settings
+   ```
+4. Update environment variables in Jenkinsfile:
+   ```groovy
+   DOCKER_REGISTRY = 'your-registry.com'
+   ```
+
+**Trigger Pipeline:**
+```bash
+# Manual trigger from Jenkins UI
+# Or automatic trigger on git push (configure webhook)
+```
+
+### Security Scanning Tools
+
+- **Trivy**: Scans Docker images for HIGH/CRITICAL vulnerabilities
+- **Bandit**: Python security linter for common security issues
+- **Flake8**: Code quality and style checker
+
 
 ### Monitoring
 - Health check endpoint for uptime monitoring
