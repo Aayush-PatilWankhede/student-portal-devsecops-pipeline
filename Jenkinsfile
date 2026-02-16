@@ -36,12 +36,15 @@ pipeline {
             }
         }
         
-        stage('Security Scanning') {
+        stage('Security Scanning with Trivy') {
             steps {
-                echo 'Security scanning - verifying Docker image...'
+                echo 'Running Trivy vulnerability scan...'
                 script {
-                    bat 'docker images ${DOCKER_IMAGE}'
-                    echo 'Security scan completed'
+                    bat """
+                        trivy image --severity HIGH,CRITICAL --exit-code 0 --format table ${DOCKER_IMAGE}:${DOCKER_TAG}
+                        trivy image --severity HIGH,CRITICAL --format json --output trivy-report.json ${DOCKER_IMAGE}:${DOCKER_TAG}
+                    """
+                    echo 'Trivy scan completed. Check trivy-report.json for details.'
                 }
             }
         }
