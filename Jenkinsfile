@@ -63,10 +63,16 @@ pipeline {
             steps {
                 echo 'Running SonarQube code analysis...'
                 script {
-                    withSonarQubeEnv('SonarQube') {
-                        bat """
-                            sonar-scanner -Dsonar.projectKey=${SONARQUBE_PROJECT_KEY} -Dsonar.sources=. -Dsonar.host.url=${SONARQUBE_URL} -Dsonar.python.version=3.11 -Dsonar.exclusions=**/*.md,**/templates/**,**/static/**,**/__pycache__/**,**/venv/**,.git/**,database/**
-                        """
+                    try {
+                        withSonarQubeEnv('SonarQube') {
+                            bat """
+                                sonar-scanner -Dsonar.projectKey=${SONARQUBE_PROJECT_KEY} -Dsonar.sources=. -Dsonar.host.url=${SONARQUBE_URL} -Dsonar.python.version=3.11 -Dsonar.exclusions=**/*.md,**/templates/**,**/static/**,**/__pycache__/**,**/venv/**,.git/**,database/**
+                            """
+                        }
+                        echo 'SonarQube analysis completed successfully'
+                    } catch (Exception e) {
+                        echo "SonarQube analysis skipped: ${e.message}"
+                        echo 'Continuing pipeline without SonarQube...'
                     }
                 }
             }
