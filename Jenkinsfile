@@ -56,12 +56,27 @@ pipeline {
                 }
             }
         }
+        
+        stage('Deploy Application') {
+            steps {
+                echo 'Deploying application...'
+                script {
+                    bat """
+                        docker stop student-portal-app 2>nul || echo "No container running"
+                        docker rm student-portal-app 2>nul || echo "No container to remove"
+                        docker run -d --name student-portal-app -p 5000:5000 -e FLASK_ENV=production -v student-portal-db:/app/database -v student-portal-uploads:/app/static/uploads ${DOCKER_IMAGE}:latest
+                        echo "Application deployed successfully on http://localhost:5000"
+                    """
+                }
+            }
+        }
     }
     
     post {
         success {
             echo 'Pipeline completed successfully!'
             echo "Docker image built: ${DOCKER_IMAGE}:${DOCKER_TAG}"
+            echo 'Application is now running at http://localhost:5000'
         }
         failure {
             echo 'Pipeline failed! Please check the logs.'
