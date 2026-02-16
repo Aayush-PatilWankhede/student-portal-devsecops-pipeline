@@ -5,8 +5,6 @@ pipeline {
         DOCKER_IMAGE = 'student-portal'
         DOCKER_TAG = "${BUILD_NUMBER}"
         GIT_REPO = 'https://github.com/Aayush-PatilWankhede/student-portal-devsecops-pipeline.git'
-        SONARQUBE_URL = 'http://localhost:9000'
-        SONARQUBE_PROJECT_KEY = 'student-portal'
     }
     
     stages {
@@ -59,25 +57,6 @@ pipeline {
             }
         }
         
-        stage('SonarQube Analysis') {
-            steps {
-                echo 'Running SonarQube code analysis...'
-                script {
-                    try {
-                        withSonarQubeEnv('SonarQube') {
-                            bat """
-                                sonar-scanner -Dsonar.projectKey=${SONARQUBE_PROJECT_KEY} -Dsonar.sources=. -Dsonar.host.url=${SONARQUBE_URL} -Dsonar.python.version=3.11 -Dsonar.exclusions=**/*.md,**/templates/**,**/static/**,**/__pycache__/**,**/venv/**,.git/**,database/**
-                            """
-                        }
-                        echo 'SonarQube analysis completed successfully'
-                    } catch (Exception e) {
-                        echo "SonarQube analysis skipped: ${e.message}"
-                        echo 'Continuing pipeline without SonarQube...'
-                    }
-                }
-            }
-        }
-        
         stage('Deploy Application') {
             steps {
                 echo 'Deploying application...'
@@ -98,7 +77,6 @@ pipeline {
             echo 'Pipeline completed successfully!'
             echo "Docker image built: ${DOCKER_IMAGE}:${DOCKER_TAG}"
             echo 'Application is now running at http://localhost:5000'
-            echo 'SonarQube analysis available at http://localhost:9000'
         }
         failure {
             echo 'Pipeline failed! Please check the logs.'
