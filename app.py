@@ -18,7 +18,9 @@ app = Flask(__name__)
 app.config.from_object(Config)
 
 # Initialize Prometheus metrics
-metrics = PrometheusMetrics(app)
+metrics = PrometheusMetrics(app, path='/metrics')
+metrics.info('app_info', 'Student Portal Application Info', version='1.0.0')
+
 
 # Initialize database
 db = SQLAlchemy(app)

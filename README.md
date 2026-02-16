@@ -337,6 +337,40 @@ The project includes a comprehensive Jenkins pipeline (`Jenkinsfile`) with DevSe
 - **Bandit**: Python security linter for common security issues
 - **Flake8**: Code quality and style checker
 
+### Monitoring Stack
+
+The application includes a complete monitoring solution with **Prometheus** for metrics collection and **Grafana** for visualization.
+
+**Components:**
+- **Prometheus**: Metrics collection and storage (Port 9090)
+- **Grafana**: Dashboard and visualization (Port 3000)
+- **Flask Exporter**: Automatic Flask metrics instrumentation
+
+**Quick Start:**
+```bash
+# Start all services including monitoring
+docker-compose up -d
+
+# Access monitoring tools
+# Prometheus: http://localhost:9090
+# Grafana: http://localhost:3000 (login: admin/admin)
+```
+
+**Available Metrics:**
+- Request rate and throughput
+- Response time (p50, p95, p99 percentiles)
+- HTTP status codes (2xx, 4xx, 5xx)
+- Error rates and exceptions
+- Application health status
+
+**Grafana Dashboard:**
+Navigate to http://localhost:3000 → Dashboards → "Student Portal Monitoring" to view:
+- Real-time request metrics
+- Performance graphs
+- Error tracking
+- System health indicators
+
+The Prometheus datasource and dashboard are pre-configured and auto-loaded on startup.
 
 ### Monitoring
 - Health check endpoint for uptime monitoring

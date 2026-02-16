@@ -11,11 +11,12 @@ services:
     environment:
       - FLASK_ENV=development
       - SECRET_KEY=${SECRET_KEY:-dev-secret-key-change-in-production}
-      - DATABASE_URL=sqlite:///database/students.db
-      - UPLOAD_FOLDER=static/uploads
+      - DATABASE_URL=sqlite:////app/database/students.db
+      - UPLOAD_FOLDER=/app/static/uploads
       - MAX_CONTENT_LENGTH=16777216
+      - DEBUG_METRICS=1
     volumes:
-      - ./database:/app/database
+      # - ./database:/app/database
       - ./static/uploads:/app/static/uploads
       - ./logs:/app/logs
       - ./.env:/app/.env:ro
